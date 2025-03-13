@@ -1,0 +1,48 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    volumes:
+      - ./db_storage/postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  web:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    image: django_app
+    container_name: django_app
+    depends_on:
+      - db
+    volumes:
+      - ./data_storage/static:/static
+      - ./data_storage/media:/media
+    env_file:
+      - .env
+    command: >
+      sh -c "sleep 5 && ./manage.py collectstatic --noinput && ./manage.py makemigrations && ./manage.py migrate && gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
+    expose:
+      - "8000"
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    volumes:
+      - ./data_storage/static:/static
+      - ./data_storage/media:/media
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    env_file:
+      - .env
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:

@@ -1,15 +1,27 @@
 from datetime import timedelta
-
 import environ
 import os
+
 root = environ.Path(__file__) - 2
 env = environ.Env()
-environ.Env.read_env(env.str(root(), '.env'))
+environ.Env.read_env(env.str(root(), '.env.dev'))
 BASE_DIR = root()
 
 SECRET_KEY = env.str('SECRET_KEY')
+BOT_SECRET_KEY = env.str('BOT_SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default='').split(' ')
+
+DATABASES = {
+    'default': {
+        'ENGINE': env.str('ENGINE'),
+        'NAME': env.str('POSTGRES_DB'),
+        'USER': env.str('POSTGRES_USER'),
+        'PASSWORD': env.str('POSTGRES_PASSWORD'),
+        'HOST': env.str('DB_HOST'),
+        'PORT': env.int('DB_PORT'),
+    }
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -26,18 +38,23 @@ INSTALLED_APPS += [
     'django_filters',
     'corsheaders',
     'djoser',
+    'phonenumber_field',
 ]
 
 #apps
 INSTALLED_APPS += [
     'api',
     'common',
+    'users',
+    'dogs',
 ]
 
 # after apps
 INSTALLED_APPS += [
     'drf_spectacular',
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,17 +86,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env.str('PG_DATABASE'),
-        'USER': env.str('PG_USER'),
-        'PASSWORD': env.str('PG_PASSWORD'),
-        'HOST': env.str('DB_HOST'),
-        'PORT': env.int('DB_PORT'),
-    }
-}
 
 ###########################
 # DJANGO REST FRAMEWORK
@@ -196,7 +202,7 @@ DJOSER = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -206,7 +212,7 @@ SIMPLE_JWT = {
     'ISSUER': None,
 
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
+    'USER_ID_FIELD': 'telegram_id',
     'USER_ID_CLAIM': 'user_id',
 
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
@@ -216,5 +222,5 @@ SIMPLE_JWT = {
 
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=1),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=14),
 }
