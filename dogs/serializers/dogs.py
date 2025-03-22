@@ -46,19 +46,22 @@ class DogCreateSerializer(serializers.ModelSerializer):
         )
 
     def validate_name(self, value):
-        return value.lower()
-
-    def validate_gender(self, value):
+        value = value[0].upper() + value[1:].lower()
         return value
 
+    def validate_gender(self, value):
+        return value.upper()
+
     def validate_breed(self, value):
-        return value.lower()
+        value = value[0].upper() + value[1:].lower()
+        return value
 
     def date_of_birth(self, value):
         return value
 
     def validate_color(self, value):
-        return value.lower()
+        value = value[0].upper() + value[1:].lower()
+        return value
 
     def validate_extra(self, value):
         return value.lower()

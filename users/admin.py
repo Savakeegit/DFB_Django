@@ -6,7 +6,7 @@ from users.models.users import User
 class UserAdmin(admin.ModelAdmin):
     change_user_password_template = None
     fieldsets = (
-        (None, {'fields': ( 'username', 'email', 'refresh_token')}),
+        (None, {'fields': ( 'username',)}),
         (_('Личная информация'),
          {'fields': ('first_name', 'last_name',)}),
         (_('Permissions'), {
@@ -20,11 +20,11 @@ class UserAdmin(admin.ModelAdmin):
             'fields': ('email', 'phone_number', 'password1', 'password2',),
         }),
     )
-    list_display = ('telegram_id', 'username', 'email', 'refresh_token')
+    list_display = ('telegram_id', 'username',)
 
     list_display_links = ('telegram_id',)
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('username', 'first_name', 'last_name', 'telegram_id', 'email', )
+    search_fields = ('username', 'first_name', 'last_name', 'telegram_id', )
     ordering = ('-telegram_id',)
     filter_horizontal = ('groups', 'user_permissions',)
-    readonly_fields = ('last_login', 'refresh_token',)
+    readonly_fields = ('last_login', )

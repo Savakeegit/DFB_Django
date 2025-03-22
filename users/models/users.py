@@ -6,11 +6,13 @@ from users.managers import CustomUserManager
 class User(AbstractUser):
     telegram_id = models.CharField('Telegram ID', max_length=64, primary_key=True)
     username = models.CharField('Никнейм', max_length=36, unique=True, null=True, blank=True)
-    email = models.EmailField('Почта', max_length=36, unique=True, null=True, blank=True, default=None,)
-    refresh_token = models.CharField('Refresh Token', max_length=255, null=True, blank=True, default=None)
+    email = None
+    password = models.CharField('Password', max_length=255, null=True, blank=True, default=None)
 
     objects = CustomUserManager()
+
     USERNAME_FIELD = 'telegram_id'
+    REQUIRED_FIELDS = ['username',]
 
     class Meta:
         verbose_name = 'Пользователь'

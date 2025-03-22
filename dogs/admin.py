@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from dogs.models.dogs import Dog, DogGender
+from dogs.models.dogs import Dog
 
 
 @admin.register(Dog)
@@ -15,12 +15,4 @@ class DogAdmin(admin.ModelAdmin):
         'photo',
         'owner',
         'extra',
-    )
-
-
-@admin.register(DogGender)
-class DogGenderAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'name',
     )

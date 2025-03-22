@@ -3,10 +3,11 @@ from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import AllowAny
 
+from common.permissions import IsSafeSender
 from common.views.mixins import LRCUDViewSet
 from dogs.models.dogs import Dog
 import dogs.serializers.dogs as dogs_serializers
-from dogs.permissions import  IsMyDog
+from dogs.permissions import IsMyDog
 
 
 @extend_schema_view(
@@ -18,8 +19,7 @@ from dogs.permissions import  IsMyDog
 )
 class DogsView(LRCUDViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
-    #permission_classes = [IsMyDog]
-    permission_classes = [AllowAny]
+    # permission_classes = [IsMyDog, IsSafeSender]
     serializer_class = dogs_serializers.DogListSerializer
     queryset = Dog.objects.all()
     filter_backends = (
@@ -38,5 +38,6 @@ class DogsView(LRCUDViewSet):
     }
 
     def get_queryset(self):
+        print(self.request.user)
         qs = Dog.objects.select_related('owner').filter(owner=self.request.user)
         return qs

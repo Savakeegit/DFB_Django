@@ -8,7 +8,7 @@ environ.Env.read_env(env.str(root(), '.env.dev'))
 BASE_DIR = root()
 
 SECRET_KEY = env.str('SECRET_KEY')
-BOT_SECRET_KEY = env.str('BOT_SECRET_KEY')
+TELEGRAM_BOT_HEADER_TOKEN = env.str('TELEGRAM_BOT_HEADER_TOKEN')
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.str('ALLOWED_HOSTS', default='').split(' ')
 
@@ -55,6 +55,8 @@ INSTALLED_APPS += [
 ]
 
 AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = 'users.authentication.CustomAuthenticationBackend', #доступ к админке
+#AUTHENTICATION_BACKENDS = 'django.contrib.auth.backends.ModelBackend',
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,30 +88,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-###########################
-# DJANGO REST FRAMEWORK
-###########################
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',),
-
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ],
-
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
-        'rest_framework.parsers.FileUploadParser',
-    ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    # 'DEFAULT_PAGINATION_CLASS': 'common.pagination.BasePagination',
-}
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -153,6 +131,31 @@ CORS_ALLOW_HEADERS = ['*']
 CSRF_COOKIE_SECURE = False
 
 
+###########################
+# DJANGO REST FRAMEWORK
+###########################
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # доступ к view (endpoints)
+    ],
+
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FileUploadParser',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # 'DEFAULT_PAGINATION_CLASS': 'common.pagination.BasePagination',
+}
+
+
 ######################
 # DRF SPECTACULAR
 ######################
@@ -166,8 +169,8 @@ SPECTACULAR_SETTINGS = {
     ],
 
     'SERVE_AUTHENTICATION': [
-        'rest_framework.authentication.BasicAuthentication',
-
+        'rest_framework.authentication.BasicAuthentication', # способы авторизации какие предоставляет spec
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 
     'SWAGGER_UI_SETTINGS': {
@@ -202,7 +205,7 @@ DJOSER = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -221,6 +224,6 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=1),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=14),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
 }

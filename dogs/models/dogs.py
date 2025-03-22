@@ -1,12 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from dogs.models.dog_genders import DogGender
 
 User = get_user_model()
 
 class Dog(models.Model):
     name = models.CharField('Кличка', max_length=32)
-    gender = models.ForeignKey(DogGender, verbose_name='Пол', on_delete=models.CASCADE)
+    gender = models.CharField('Пол', max_length=1)
     breed = models.CharField('Порода', max_length=48)
     color = models.CharField('Окрас', max_length=32)
     date_of_birth = models.DateField('Дата рождения', )
